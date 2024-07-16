@@ -111,12 +111,12 @@ const LayoutAdmin = () => {
                         </a>
                     </Dropdown>
                 </div>
-                <Content>
+                <Content style={{ padding: '15px' }}>
                     <Outlet />
                 </Content>
-                <Footer style={{ padding: 0 }}>
+                {/* <Footer style={{ padding: 0 }}>
                     ReactJS 2024 &copy; by Edan Nguyễn <HeartTwoTone />
-                </Footer>
+                </Footer> */}
             </Layout>
         </Layout>
     );

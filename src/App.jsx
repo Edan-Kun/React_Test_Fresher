@@ -19,6 +19,7 @@ import NotFound from './components/NotFound';
 import AdminPage from './pages/admin';
 import ProtectedRoute from './components/ProtectedRoute';
 import LayoutAdmin from './components/Admin/LayoutAdmin';
+import ManageUserPage from './pages/admin/User';
 
 
 const Layout = () => {
@@ -81,7 +82,10 @@ export default function App() {
         },
         {
           path: "user",
-          element: <ContactPage />,
+          element:
+            <ProtectedRoute>
+              <ManageUserPage />
+            </ProtectedRoute>
         },
         {
           path: "book",

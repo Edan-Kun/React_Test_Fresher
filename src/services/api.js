@@ -31,4 +31,9 @@ const fetchAccount = () => {
     return axios.get(URL_BACKEND);
 }
 
-export { registerUserAPI, loginUserAPI, fetchAccount, logoutUserAPI }
+const fetchListUserAPI = (query) => {
+    const URL_BACKEND = `/api/v1/user?${query}`;
+    return axios.get(URL_BACKEND);
+}
+
+export { registerUserAPI, loginUserAPI, fetchAccount, logoutUserAPI, fetchListUserAPI }
