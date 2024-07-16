@@ -1,0 +1,6 @@
+
+username: MinhDuc-Dev
+
+password: hoanglinhnhi2
+
+url: mongodb+srv://MinhDuc-Dev:hoanglinhnhi2@minhduc-dev.ebztde4.mongodb.net/MinhDuc
