@@ -3,6 +3,7 @@ import { Table, Row, Col, Popconfirm, Button } from 'antd';
 import InputSearch from './InputSearch';
 import { fetchListUserAPI } from '../../../services/api';
 import { CloudUploadOutlined, DeleteTwoTone, ExportOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import UserViewDetail from './UserViewDetail';
 
 const UserTable = () => {
     const [listUser, setListUser] = useState([]);
@@ -12,6 +13,8 @@ const UserTable = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [filter, setFilter] = useState("");
     const [sortQuery, setSortQuery] = useState("");
+    const [dataViewDetail, setDataViewDetail] = useState(null);
+    const [openViewDetail, setOpenViewDetail] = useState(false);
 
     useEffect(() => {
         loadUser();
@@ -38,7 +41,18 @@ const UserTable = () => {
     const columns = [
         {
             title: 'ID',
-            dataIndex: '_id'
+            dataIndex: '_id',
+            render: (_, record) => {
+                return (
+                    <a
+                        href="#"
+                        onClick={() => {
+                            setDataViewDetail(record);
+                            setOpenViewDetail(true);
+                        }}
+                    >{record._id}</a>
+                )
+            }
         },
         {
             title: 'Tên Hiển Thị',
@@ -177,6 +191,12 @@ const UserTable = () => {
                                 total: total
                             }
                         }
+                    />
+                    <UserViewDetail
+                        dataViewDetail={dataViewDetail}
+                        setDataViewDetail={setDataViewDetail}
+                        openViewDetail={openViewDetail}
+                        setOpenViewDetail={setOpenViewDetail}
                     />
                 </Col>
             </Row>
