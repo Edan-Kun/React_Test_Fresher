@@ -10,23 +10,28 @@ const UserTable = () => {
     const [pageSize, setPageSize] = useState(5);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [filter, setFilter] = useState("");
+    const [sortQuery, setSortQuery] = useState("");
 
     useEffect(() => {
         loadUser();
-    }, [current, pageSize]);
+    }, [current, pageSize, filter, sortQuery]);
 
-    const loadUser = async (searchFilter) => {
-        setIsLoading(true)
+    const loadUser = async () => {
+        setIsLoading(true);
         let query = `current=${current}&pageSize=${pageSize}`;
-        if (searchFilter) {
-            query += `&${searchFilter}`
+        if (filter) {
+            query += `&${filter}`;
+        }
+        if (sortQuery) {
+            query += `&${sortQuery}`;
         }
         const res = await fetchListUserAPI(query);
         if (res && res.data) {
             setListUser(res.data.result);
-            setTotal(res.data.meta.total)
+            setTotal(res.data.meta.total);
         }
-        setIsLoading(false)
+        setIsLoading(false);
     }
 
 
@@ -85,7 +90,10 @@ const UserTable = () => {
             setPageSize(pagination.pageSize)
             setCurrent(1);
         }
-        console.log('params', pagination, filters, sorter, extra);
+        if (sorter && sorter.field) {
+            const res = sorter.order === 'ascend' ? `sort=${sorter.field}` : `sort=-${sorter.field}`;
+            setSortQuery(res);
+        }
     };
 
     const handleDeleteUser = async (userId) => {
@@ -127,7 +135,10 @@ const UserTable = () => {
                     >
                         Thêm mới
                     </Button>
-                    <Button type='ghost' onClick={() => loadUser()}>
+                    <Button type='ghost' onClick={() => {
+                        setFilter("");
+                        setSortQuery("");
+                    }}>
                         <ReloadOutlined />
                     </Button>
 
@@ -139,20 +150,21 @@ const UserTable = () => {
 
 
     const handleSearch = (query) => {
-        loadUser(query)
+        setFilter(query);
     }
 
     return (
         <>
             <Row gutter={[20, 20]}>
                 <Col span={24}>
-                    <InputSearch handleSearch={handleSearch} />
+                    <InputSearch
+                        handleSearch={handleSearch}
+                        setFilter={setFilter} />
                 </Col>
                 <Col span={24}>
                     <Table
                         title={renderHeader}
                         loading={isLoading}
-
                         columns={columns}
                         dataSource={listUser}
                         onChange={onChange}
