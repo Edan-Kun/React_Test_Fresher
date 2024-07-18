@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Divider, Form, Input, message, Modal, notification } from 'antd';
-import { createUserAPI } from '../../../services/api';
+import { createUserAPI } from '../../../../services/api';
 
 const UserModalCreate = (props) => {
     const { openModalCreate, setOpenModalCreate } = props;

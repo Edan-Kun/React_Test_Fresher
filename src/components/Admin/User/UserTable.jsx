@@ -3,8 +3,11 @@ import { Table, Row, Col, Popconfirm, Button, message, notification } from 'antd
 import InputSearch from './InputSearch';
 import { deleteUserAPI, fetchListUser } from '../../../services/api';
 import { CloudUploadOutlined, DeleteTwoTone, ExportOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
-import UserModalCreate from './UserModalCreate';
+import UserModalCreate from './CreateUser/UserModalCreate';
+import UserImport from './ImportFile/UserImport';
 import UserViewDetail from './UserViewDetail';
+import moment from 'moment';
+import { FORMAT_DATE_DISPLAY } from '../../../utils/constant';
 
 // https://stackblitz.com/run?file=demo.tsx
 const UserTable = () => {
@@ -17,6 +20,7 @@ const UserTable = () => {
     const [filter, setFilter] = useState("");
     const [sortQuery, setSortQuery] = useState("");
 
+    const [openModalImport, setOpenModalImport] = useState(false);
     const [openModalCreate, setOpenModalCreate] = useState(false);
     const [openViewDetail, setOpenViewDetail] = useState(false);
     const [dataViewDetail, setDataViewDetail] = useState(null);
@@ -49,7 +53,7 @@ const UserTable = () => {
 
     const columns = [
         {
-            title: 'Id',
+            title: 'ID',
             dataIndex: '_id',
             render: (text, record, index) => {
                 return (
@@ -61,7 +65,7 @@ const UserTable = () => {
             }
         },
         {
-            title: 'Tên hiển thị',
+            title: 'Tên Hiển Thị',
             dataIndex: 'fullName',
             sorter: true
         },
@@ -76,9 +80,21 @@ const UserTable = () => {
             sorter: true
         },
         {
-            title: 'Số điện thoại',
+            title: 'Số Điện Thoại',
             dataIndex: 'phone',
             sorter: true
+        },
+        {
+            title: 'Ngày Cập Nhật',
+            dataIndex: 'updatedAt',
+            sorter: true,
+            render: (text, record, index) => {
+                return (
+                    <>
+                        {moment(record.updatedAt).format(FORMAT_DATE_DISPLAY)}
+                    </>
+                )
+            }
         },
         {
             title: 'Action',
@@ -143,6 +159,7 @@ const UserTable = () => {
                     <Button
                         icon={<CloudUploadOutlined />}
                         type="primary"
+                        onClick={() => setOpenModalImport(true)}
                     >Import</Button>
 
                     <Button
@@ -206,6 +223,12 @@ const UserTable = () => {
             <UserModalCreate
                 openModalCreate={openModalCreate}
                 setOpenModalCreate={setOpenModalCreate}
+                fetchUser={fetchUser}
+            />
+
+            <UserImport
+                openModalImport={openModalImport}
+                setOpenModalImport={setOpenModalImport}
                 fetchUser={fetchUser}
             />
 

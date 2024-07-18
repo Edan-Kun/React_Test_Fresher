@@ -50,7 +50,12 @@ const createUserAPI = (fullName, email, password, phone) => {
     return axios.post(URL_BACKEND, data);
 }
 
+const importUserAPI = (data) => {
+    const URL_BACKEND = '/api/v1/user/bulk-create';
+    return axios.post(URL_BACKEND, data);
+}
+
 export {
     registerUserAPI, loginUserAPI, callFetchAccount, logoutUserAPI,
-    fetchListUser, deleteUserAPI, createUserAPI
+    fetchListUser, deleteUserAPI, createUserAPI, importUserAPI
 }
