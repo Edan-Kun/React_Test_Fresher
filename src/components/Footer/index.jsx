@@ -1,10 +1,9 @@
-import './footer.scss'
+import './footer.scss';
+
 const Footer = () => {
     return (
         <footer>
-            <div>
-                React JS &copy; 2023 by Edan Nguyễn
-            </div>
+            <div>React Test Fresher &copy; by Edan Nguyễn</div>
         </footer>
     )
 }

@@ -5,8 +5,6 @@ import { registerUserAPI } from '../../services/api';
 import './register.scss';
 
 const RegisterPage = () => {
-    const [form] = Form.useForm();
-
     const navigate = useNavigate();
     const [isSubmit, setIsSubmit] = useState(false);
 
@@ -16,19 +14,18 @@ const RegisterPage = () => {
             values.fullName,
             values.email,
             values.password,
-            values.phone
-        );
+            values.phone);
         setIsSubmit(false);
         if (res?.data?._id) {
             message.success('Đăng ký tài khoản thành công!');
-            navigate('/login');
+            navigate('/login')
         } else {
             notification.error({
-                message: "Đăng ký tài khoản thất bại",
-                description: JSON.stringify(res.message)
-                //     res.message && res.message.length > 0 ? res.message[0] : res.message,
-                // duration: 5
-            });
+                message: "Có lỗi xảy ra",
+                description:
+                    res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                duration: 5
+            })
         }
     };
 
@@ -43,12 +40,13 @@ const RegisterPage = () => {
                             <Divider />
                         </div>
                         <Form
-                            form={form}
-                            layout='vertical'
+                            name="basic"
+                            // style={{ maxWidth: 600, margin: '0 auto' }}
                             onFinish={onFinish}
                             autoComplete="off"
                         >
                             <Form.Item
+                                labelCol={{ span: 24 }} //whole column
                                 label="Họ tên"
                                 name="fullName"
                                 rules={[{ required: true, message: 'Họ tên không được để trống!' }]}
@@ -56,7 +54,9 @@ const RegisterPage = () => {
                                 <Input />
                             </Form.Item>
 
+
                             <Form.Item
+                                labelCol={{ span: 24 }} //whole column
                                 label="Email"
                                 name="email"
                                 rules={[{ required: true, message: 'Email không được để trống!' }]}
@@ -65,15 +65,15 @@ const RegisterPage = () => {
                             </Form.Item>
 
                             <Form.Item
+                                labelCol={{ span: 24 }} //whole column
                                 label="Mật khẩu"
                                 name="password"
                                 rules={[{ required: true, message: 'Mật khẩu không được để trống!' }]}
                             >
-                                <Input.Password onKeyDown={(event) => {
-                                    if (event.key === 'Enter') form.submit()
-                                }} />
+                                <Input.Password />
                             </Form.Item>
                             <Form.Item
+                                labelCol={{ span: 24 }} //whole column
                                 label="Số điện thoại"
                                 name="phone"
                                 rules={[{ required: true, message: 'Số điện thoại không được để trống!' }]}
@@ -82,21 +82,18 @@ const RegisterPage = () => {
                             </Form.Item>
 
                             <Form.Item
+                            // wrapperCol={{ offset: 6, span: 16 }}
                             >
-                                <Button
-                                    type="primary"
-                                    onClick={() => form.submit()}
-                                    loading={isSubmit}
-                                >
+                                <Button type="primary" htmlType="submit" loading={isSubmit}>
                                     Đăng ký
                                 </Button>
-                                <Divider />
                             </Form.Item>
-                            <div className="text text-normal">Bạn đã có tài khoản ?
+                            <Divider />
+                            <p className="text text-normal">Đã có tài khoản ?
                                 <span>
                                     <Link to='/login' > Đăng Nhập </Link>
                                 </span>
-                            </div>
+                            </p>
                         </Form>
                     </section>
                 </div>

@@ -8,38 +8,42 @@ import {
     DollarCircleOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    CaretDownOutlined,
+    DownOutlined,
+    HomeOutlined,
     AccountBookOutlined,
     LogoutOutlined,
-
+    CaretDownOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Dropdown, Space } from 'antd';
-import { Outlet } from "react-router-dom";
+import { Layout, Menu, Dropdown, Space, message, Avatar } from 'antd';
+import { Outlet, useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import './layout.scss';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUserAPI } from '../../services/api';
+import { doLogoutAction } from '../../redux/account/accountSlice';
 
 const { Content, Footer, Sider } = Layout;
 
 const items = [
     {
-        label: <Link to='/admin'>DashBoard</Link>,
+        label: <Link to='/admin'>Dashboard</Link>,
         key: 'dashboard',
         icon: <AppstoreOutlined />
     },
     {
         label: <span>Manage Users</span>,
+        // key: 'user',
         icon: <UserOutlined />,
         children: [
             {
                 label: <Link to='/admin/user'>CRUD</Link>,
                 key: 'crud',
-                icon: <TeamOutlined />
+                icon: <TeamOutlined />,
             },
             {
                 label: 'Files1',
-                key: 'files1',
-                icon: <TeamOutlined />
+                key: 'file1',
+                icon: <TeamOutlined />,
             }
         ]
     },
@@ -56,23 +60,47 @@ const items = [
 
 ];
 
-const itemsDropdown = [
-    {
-        label: <label>Tài Khoản</label>,
-        key: 'account',
-        icon: <AccountBookOutlined />
-    },
-    {
-        label: <label>Đăng Xuất</label>,
-        key: 'logout',
-        icon: <LogoutOutlined />
-    }
-];
-
 const LayoutAdmin = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [activeMenu, setActiveMenu] = useState('dashboard');
     const user = useSelector(state => state.account.user);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogout = async () => {
+        const res = await logoutUserAPI();
+        if (res && res.data) {
+            dispatch(doLogoutAction());
+            message.success('Đăng xuất thành công');
+            navigate('/')
+        }
+    }
+
+
+    const itemsDropdown = [
+        {
+            label: <Link to={'/'}>Trang Chủ</Link>,
+            key: 'home',
+            icon: <HomeOutlined />
+        },
+        {
+            label: <label style={{ cursor: 'pointer' }}>Tài Khoản</label>,
+            key: 'account',
+            icon: <AccountBookOutlined />
+        },
+        {
+            label: <label
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleLogout()}
+            >Đăng Xuất</label>,
+            key: 'logout',
+            icon: <LogoutOutlined />
+        },
+
+    ];
+
+    const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`;
 
     return (
         <Layout
@@ -84,7 +112,7 @@ const LayoutAdmin = () => {
                 collapsible
                 collapsed={collapsed}
                 onCollapse={(value) => setCollapsed(value)}>
-                <div style={{ height: 32, margin: 16, textAlign: 'center', fontFamily: "JetBrains Mono", fontSize: "20px" }}>
+                <div style={{ height: 32, margin: 16, textAlign: 'center', fontFamily: "JetBrains Mono", fontSize: "16px" }}>
                     Admin
                 </div>
                 <Menu
@@ -103,19 +131,18 @@ const LayoutAdmin = () => {
                         })}
                     </span>
                     <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                        <a onClick={(e) => e.preventDefault()}>
-                            <Space>
-                                Xin chào! {user?.fullName}
-                                <CaretDownOutlined />
-                            </Space>
-                        </a>
+                        <Space style={{ cursor: "pointer" }}>
+                            <Avatar src={urlAvatar} />
+                            {user?.fullName}
+                            <CaretDownOutlined />
+                        </Space>
                     </Dropdown>
                 </div>
                 <Content style={{ padding: '15px' }}>
                     <Outlet />
                 </Content>
                 {/* <Footer style={{ padding: 0 }}>
-                    ReactJS 2024 &copy; by Edan Nguyễn <HeartTwoTone />
+                    React Test Fresher &copy; Hỏi Dân IT - Made with <HeartTwoTone />
                 </Footer> */}
             </Layout>
         </Layout>

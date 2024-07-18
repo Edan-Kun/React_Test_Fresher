@@ -1,9 +1,9 @@
-
 const AdminPage = () => {
     return (
         <>
-            Admin Dashboard
+            admin dashboard
         </>
     )
 }
+
 export default AdminPage;

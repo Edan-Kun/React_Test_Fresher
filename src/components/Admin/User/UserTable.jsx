@@ -1,27 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Row, Col, Popconfirm, Button } from 'antd';
+import { Table, Row, Col, Popconfirm, Button, message, notification } from 'antd';
 import InputSearch from './InputSearch';
-import { fetchListUserAPI } from '../../../services/api';
+import { deleteUserAPI, fetchListUser } from '../../../services/api';
 import { CloudUploadOutlined, DeleteTwoTone, ExportOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import UserModalCreate from './UserModalCreate';
 import UserViewDetail from './UserViewDetail';
 
+// https://stackblitz.com/run?file=demo.tsx
 const UserTable = () => {
     const [listUser, setListUser] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [total, setTotal] = useState(0);
+
     const [isLoading, setIsLoading] = useState(false);
     const [filter, setFilter] = useState("");
     const [sortQuery, setSortQuery] = useState("");
-    const [dataViewDetail, setDataViewDetail] = useState(null);
+
+    const [openModalCreate, setOpenModalCreate] = useState(false);
     const [openViewDetail, setOpenViewDetail] = useState(false);
+    const [dataViewDetail, setDataViewDetail] = useState(null);
+
+    // useEffect(() => {
+    //     fetchUser();
+    // }, []);
 
     useEffect(() => {
-        loadUser();
+        fetchUser();
     }, [current, pageSize, filter, sortQuery]);
 
-    const loadUser = async () => {
-        setIsLoading(true);
+    const fetchUser = async () => {
+        setIsLoading(true)
         let query = `current=${current}&pageSize=${pageSize}`;
         if (filter) {
             query += `&${filter}`;
@@ -29,48 +38,45 @@ const UserTable = () => {
         if (sortQuery) {
             query += `&${sortQuery}`;
         }
-        const res = await fetchListUserAPI(query);
+
+        const res = await fetchListUser(query);
         if (res && res.data) {
             setListUser(res.data.result);
-            setTotal(res.data.meta.total);
+            setTotal(res.data.meta.total)
         }
-        setIsLoading(false);
+        setIsLoading(false)
     }
-
 
     const columns = [
         {
-            title: 'ID',
+            title: 'Id',
             dataIndex: '_id',
-            render: (_, record) => {
+            render: (text, record, index) => {
                 return (
-                    <a
-                        href="#"
-                        onClick={() => {
-                            setDataViewDetail(record);
-                            setOpenViewDetail(true);
-                        }}
-                    >{record._id}</a>
+                    <a href='#' onClick={() => {
+                        setDataViewDetail(record);
+                        setOpenViewDetail(true);
+                    }}>{record._id}</a>
                 )
             }
         },
         {
-            title: 'Tên Hiển Thị',
+            title: 'Tên hiển thị',
             dataIndex: 'fullName',
-            sorter: true,
+            sorter: true
         },
         {
             title: 'Email',
             dataIndex: 'email',
-            sorter: true
+            sorter: true,
         },
         {
-            title: 'Vai Trò',
+            title: 'Role',
             dataIndex: 'role',
             sorter: true
         },
         {
-            title: 'Số Điện Thoại',
+            title: 'Số điện thoại',
             dataIndex: 'phone',
             sorter: true
         },
@@ -93,7 +99,6 @@ const UserTable = () => {
                 )
             }
         }
-
     ];
 
     const onChange = (pagination, filters, sorter, extra) => {
@@ -105,13 +110,13 @@ const UserTable = () => {
             setCurrent(1);
         }
         if (sorter && sorter.field) {
-            const res = sorter.order === 'ascend' ? `sort=${sorter.field}` : `sort=-${sorter.field}`;
-            setSortQuery(res);
+            const q = sorter.order === 'ascend' ? `sort=${sorter.field}` : `sort=-${sorter.field}`;
+            setSortQuery(q);
         }
     };
 
     const handleDeleteUser = async (userId) => {
-        const res = await callDeleteUser(userId);
+        const res = await deleteUserAPI(userId);
         if (res && res.data) {
             message.success('Xóa user thành công');
             fetchUser();
@@ -124,6 +129,7 @@ const UserTable = () => {
     };
 
 
+    // change button color: https://ant.design/docs/react/customize-theme#customize-design-token
     const renderHeader = () => {
         return (
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -132,26 +138,21 @@ const UserTable = () => {
                     <Button
                         icon={<ExportOutlined />}
                         type="primary"
-                    >
-                        Export
-                    </Button>
+                    >Export</Button>
 
                     <Button
                         icon={<CloudUploadOutlined />}
                         type="primary"
-                    >
-                        Import
-                    </Button>
+                    >Import</Button>
 
                     <Button
                         icon={<PlusOutlined />}
                         type="primary"
-                    >
-                        Thêm mới
-                    </Button>
+                        onClick={() => setOpenModalCreate(true)}
+                    >Thêm mới</Button>
                     <Button type='ghost' onClick={() => {
                         setFilter("");
-                        setSortQuery("");
+                        setSortQuery("")
                     }}>
                         <ReloadOutlined />
                     </Button>
@@ -161,7 +162,6 @@ const UserTable = () => {
             </div>
         )
     }
-
 
     const handleSearch = (query) => {
         setFilter(query);
@@ -173,12 +173,14 @@ const UserTable = () => {
                 <Col span={24}>
                     <InputSearch
                         handleSearch={handleSearch}
-                        setFilter={setFilter} />
+                        setFilter={setFilter}
+                    />
                 </Col>
                 <Col span={24}>
                     <Table
                         title={renderHeader}
                         loading={isLoading}
+
                         columns={columns}
                         dataSource={listUser}
                         onChange={onChange}
@@ -188,21 +190,33 @@ const UserTable = () => {
                                 current: current,
                                 pageSize: pageSize,
                                 showSizeChanger: true,
-                                total: total
+                                total: total,
+                                showTotal: (total, range) => {
+                                    return (
+                                        <div>
+                                            {range[0]} - {range[1]} trêm {total} rows
+                                        </div>
+                                    )
+                                }
                             }
                         }
                     />
-                    <UserViewDetail
-                        dataViewDetail={dataViewDetail}
-                        setDataViewDetail={setDataViewDetail}
-                        openViewDetail={openViewDetail}
-                        setOpenViewDetail={setOpenViewDetail}
-                    />
                 </Col>
             </Row>
+            <UserModalCreate
+                openModalCreate={openModalCreate}
+                setOpenModalCreate={setOpenModalCreate}
+            />
+
+            <UserViewDetail
+                openViewDetail={openViewDetail}
+                setOpenViewDetail={setOpenViewDetail}
+                dataViewDetail={dataViewDetail}
+                setDataViewDetail={setDataViewDetail}
+            />
         </>
     )
-
 }
+
 
 export default UserTable;

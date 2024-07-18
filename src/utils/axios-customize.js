@@ -4,7 +4,7 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const instance = axios.create({
     baseURL: baseUrl,
-    withCredentials: true
+    withCredentials: true,
 });
 
 instance.defaults.headers.common = { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
@@ -47,17 +47,16 @@ instance.interceptors.response.use(function (response) {
         }
     }
 
-    if (error.config && error.response
+    if (
+        error.config && error.response
         && +error.response.status === 400
         && error.config.url === '/api/v1/auth/refresh'
     ) {
-        if (window.location.pathname !== '/') {
-            window.location.href = '/login'
-        }
+        if (window.location.pathname !== '/')
+            window.location.href = '/login';
     }
 
     return error?.response?.data ?? Promise.reject(error);
 });
-
 
 export default instance;

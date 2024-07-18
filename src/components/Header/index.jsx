@@ -2,50 +2,58 @@ import React, { useState } from 'react';
 import { FaReact } from 'react-icons/fa'
 import { FiShoppingCart } from 'react-icons/fi';
 import { VscSearchFuzzy } from 'react-icons/vsc';
-import { Divider, Badge, Drawer, message } from 'antd';
-import './header.scss';
+import { Divider, Badge, Drawer, message, Avatar } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { AccountBookOutlined, CaretDownOutlined, DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import { AccountBookOutlined, CaretDownOutlined, DownOutlined, IdcardOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 import { useNavigate } from 'react-router';
 import { logoutUserAPI } from '../../services/api';
+import './header.scss';
 import { doLogoutAction } from '../../redux/account/accountSlice';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
     const [openDrawer, setOpenDrawer] = useState(false);
     const isAuthenticated = useSelector(state => state.account.isAuthenticated);
     const user = useSelector(state => state.account.user);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
 
     const handleLogout = async () => {
         const res = await logoutUserAPI();
         if (res && res.data) {
             dispatch(doLogoutAction());
-            message.success("Logout thành công");
-            navigate('/');
+            message.success('Đăng xuất thành công');
+            navigate('/')
         }
     }
 
-    const items = [
+    let items = [
         {
-            label: <label style={{ cursor: "pointer" }}>Tài Khoản</label>,
+            label: <label style={{ cursor: 'pointer' }}>Tài Khoản</label>,
             key: 'account',
             icon: <AccountBookOutlined />
         },
         {
-            label:
-                <label
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleLogout()}
-                >
-                    Đăng Xuất
-                </label>,
+            label: <label
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleLogout()}
+            >Đăng Xuất</label>,
             key: 'logout',
             icon: <LogoutOutlined />
-        }
+        },
 
     ];
+    if (user?.role === 'ADMIN') {
+        items.unshift({
+            label: <Link to='/admin'>Trang Quản Trị</Link>,
+            key: 'admin',
+            icon: <IdcardOutlined />
+        })
+    }
+
+    const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`;
+
     return (
         <>
             <div className='header-container'>
@@ -79,15 +87,14 @@ const Header = () => {
                             <li className="navigation__item mobile"><Divider type='vertical' /></li>
                             <li className="navigation__item mobile">
                                 {!isAuthenticated ?
-                                    <span onClick={() => navigate('/login')}>Tài Khoản</span>
+                                    <span onClick={() => navigate('/login')}> Tài Khoản</span>
                                     :
                                     <Dropdown menu={{ items }} trigger={['click']}>
-                                        <a onClick={(e) => e.preventDefault()}>
-                                            <Space>
-                                                Xin chào! {user?.fullName}
-                                                <CaretDownOutlined />
-                                            </Space>
-                                        </a>
+                                        <Space >
+                                            <Avatar src={urlAvatar} />
+                                            {user?.fullName}
+                                            <CaretDownOutlined />
+                                        </Space>
                                     </Dropdown>
                                 }
                             </li>
@@ -101,16 +108,14 @@ const Header = () => {
                 onClose={() => setOpenDrawer(false)}
                 open={openDrawer}
             >
-                <p>Tài Khoản</p>
+                <p>Quản lý tài khoản</p>
                 <Divider />
 
-                <p>Đăng Xuất</p>
+                <p>Đăng xuất</p>
                 <Divider />
             </Drawer>
         </>
     )
 };
-
-
 
 export default Header;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Col, Form, Input, Row, theme } from 'antd';
+import { Button, Col, Form, Input, message, Row, theme } from 'antd';
 
 const InputSearch = (props) => {
     const { token } = theme.useToken();
@@ -21,19 +21,32 @@ const InputSearch = (props) => {
         if (values.email) {
             query += `&email=/${values.email}/i`
         }
-
+        if (values.role) {
+            query += `&email=/${values.role}/i`
+        }
         if (values.phone) {
             query += `&phone=/${values.phone}/i`
         }
 
-        if (values.role) {
-            query += `&role=/${values.role}/i`
-        }
-
         if (query) {
             props.handleSearch(query);
+        } else {
+            alert("Search...search...cái gì???\nNhập vàoooooooooo");
         }
 
+        //remove undefined
+        // https://stackoverflow.com/questions/25421233/javascript-removing-undefined-fields-from-an-object
+        // Object.keys(values).forEach(key => {
+        //     if (values[key] === undefined) {
+        //         delete values[key];
+        //     }
+        // });
+
+        // if (values && Object.keys(values).length > 0) {
+        //     // https://stackoverflow.com/questions/1714786/query-string-encoding-of-a-javascript-object
+        //     const params = new URLSearchParams(values).toString();
+        //     props.handleSearch(params);
+        // }
     };
 
     return (
@@ -45,7 +58,7 @@ const InputSearch = (props) => {
                         name={`fullName`}
                         label={`Name`}
                     >
-                        <Input placeholder="placeholder" />
+                        <Input />
                     </Form.Item>
                 </Col>
                 <Col span={6}>
@@ -54,17 +67,7 @@ const InputSearch = (props) => {
                         name={`email`}
                         label={`Email`}
                     >
-                        <Input placeholder="placeholder" />
-                    </Form.Item>
-                </Col>
-
-                <Col span={6}>
-                    <Form.Item
-                        labelCol={{ span: 24 }}
-                        name={`phone`}
-                        label={`Số điện thoại`}
-                    >
-                        <Input placeholder="placeholder" />
+                        <Input />
                     </Form.Item>
                 </Col>
                 <Col span={6}>
@@ -73,7 +76,16 @@ const InputSearch = (props) => {
                         name={`role`}
                         label={`Role`}
                     >
-                        <Input placeholder="placeholder" />
+                        <Input />
+                    </Form.Item>
+                </Col>
+                <Col span={6}>
+                    <Form.Item
+                        labelCol={{ span: 24 }}
+                        name={`phone`}
+                        label={`Số điện thoại`}
+                    >
+                        <Input />
                     </Form.Item>
                 </Col>
             </Row>
@@ -104,5 +116,6 @@ const InputSearch = (props) => {
         </Form>
     );
 };
+
 
 export default InputSearch;

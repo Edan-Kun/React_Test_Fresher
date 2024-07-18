@@ -16,9 +16,12 @@ const loginUserAPI = (username, password) => {
     const data = {
         username: username,
         password: password,
-        delay: 3000
     }
     return axios.post(URL_BACKEND, data);
+}
+
+const callFetchAccount = () => {
+    return axios.get('/api/v1/auth/account')
 }
 
 const logoutUserAPI = () => {
@@ -26,14 +29,17 @@ const logoutUserAPI = () => {
     return axios.post(URL_BACKEND);
 }
 
-const fetchAccount = () => {
-    const URL_BACKEND = '/api/v1/auth/account';
-    return axios.get(URL_BACKEND);
-}
-
-const fetchListUserAPI = (query) => {
+const fetchListUser = (query) => {
     const URL_BACKEND = `/api/v1/user?${query}`;
     return axios.get(URL_BACKEND);
 }
 
-export { registerUserAPI, loginUserAPI, fetchAccount, logoutUserAPI, fetchListUserAPI }
+const deleteUserAPI = (id) => {
+    const URL_BACKEND = `/api/v1/user/${id}`;
+    return axios.delete(URL_BACKEND)
+}
+
+export {
+    registerUserAPI, loginUserAPI, callFetchAccount, logoutUserAPI,
+    fetchListUser, deleteUserAPI
+}

@@ -1,40 +1,35 @@
 import { Button, Divider, Form, Input, message, notification } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import './login.scss';
 import { loginUserAPI } from '../../services/api';
+import './login.scss';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { doLoginAction } from '../../redux/account/accountSlice';
 
-
 const LoginPage = () => {
-    const [form] = Form.useForm();
-
     const navigate = useNavigate();
     const [isSubmit, setIsSubmit] = useState(false);
 
     const dispatch = useDispatch();
 
     const onFinish = async (values) => {
+
         setIsSubmit(true);
-        const res = await loginUserAPI(
-            values.username,
-            values.password
-        );
+        const res = await loginUserAPI(values.username, values.password);
+        setIsSubmit(false);
         if (res?.data) {
             localStorage.setItem('access_token', res.data.access_token);
-            dispatch(doLoginAction(res.data.user));
-            message.success('Đăng nhập thành công');
-            navigate('/');
+            dispatch(doLoginAction(res.data.user))
+            message.success('Đăng nhập tài khoản thành công!');
+            navigate('/')
         } else {
             notification.error({
-                message: "Đăng nhập thất bại",
-                description: JSON.stringify(res.message)
-                //     res.message && res.message.length > 0 ? res.message[0] : res.message,
-                // duration: 5
-            });
+                message: "Có lỗi xảy ra",
+                description:
+                    res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                duration: 5
+            })
         }
-        setIsSubmit(false);
     };
 
 
@@ -49,12 +44,13 @@ const LoginPage = () => {
 
                         </div>
                         <Form
-                            form={form}
-                            layout='vertical'
+                            name="basic"
+                            // style={{ maxWidth: 600, margin: '0 auto' }}
                             onFinish={onFinish}
                             autoComplete="off"
                         >
                             <Form.Item
+                                labelCol={{ span: 24 }} //whole column
                                 label="Email"
                                 name="username"
                                 rules={[{ required: true, message: 'Email không được để trống!' }]}
@@ -63,31 +59,27 @@ const LoginPage = () => {
                             </Form.Item>
 
                             <Form.Item
+                                labelCol={{ span: 24 }} //whole column
                                 label="Mật khẩu"
                                 name="password"
                                 rules={[{ required: true, message: 'Mật khẩu không được để trống!' }]}
                             >
-                                <Input.Password onKeyDown={(event) => {
-                                    if (event.key === 'Enter') form.submit()
-                                }} />
+                                <Input.Password />
                             </Form.Item>
 
                             <Form.Item
+                            // wrapperCol={{ offset: 6, span: 16 }}
                             >
-                                <Button
-                                    type="primary"
-                                    onClick={() => form.submit()}
-                                    loading={isSubmit}
-                                >
-                                    Đăng Nhập
+                                <Button type="primary" htmlType="submit" loading={isSubmit}>
+                                    Đăng nhập
                                 </Button>
-                                <Divider />
                             </Form.Item>
-                            <div className="text text-normal">Bạn chưa có tài khoản ?
+                            <Divider />
+                            <p className="text text-normal">Chưa có tài khoản ?
                                 <span>
                                     <Link to='/register' > Đăng Ký </Link>
                                 </span>
-                            </div>
+                            </p>
                         </Form>
                     </section>
                 </div>
