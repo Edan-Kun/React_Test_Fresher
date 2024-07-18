@@ -7,7 +7,9 @@ import UserModalCreate from './CreateUser/UserModalCreate';
 import UserImport from './ImportFile/UserImport';
 import UserViewDetail from './UserViewDetail';
 import moment from 'moment';
-import { FORMAT_DATE_DISPLAY } from '../../../utils/constant';
+import { FORMAT_DATE_DISPLAY } from "../../../utils/constant";
+
+import * as XLSX from 'xlsx';
 
 // https://stackblitz.com/run?file=demo.tsx
 const UserTable = () => {
@@ -144,6 +146,15 @@ const UserTable = () => {
         }
     };
 
+    const handleExportData = () => {
+        if (listUser.length > 0) {
+            const worksheet = XLSX.utils.json_to_sheet(listUser);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+            XLSX.writeFile(workbook, "ExportUser.csv");
+        }
+    }
+
 
     // change button color: https://ant.design/docs/react/customize-theme#customize-design-token
     const renderHeader = () => {
@@ -154,6 +165,7 @@ const UserTable = () => {
                     <Button
                         icon={<ExportOutlined />}
                         type="primary"
+                        onClick={() => handleExportData()}
                     >Export</Button>
 
                     <Button
