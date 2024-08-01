@@ -65,8 +65,18 @@ const updateUserAPI = (_id, fullName, phone) => {
     return axios.put(URL_BACKEND, data);
 }
 
+const fetchListBook = (query) => {
+    const URL_BACKEND = `/api/v1/book?${query}`;
+    return axios.get(URL_BACKEND);
+}
+
+const deleteBookAPI = (id) => {
+    const URL_BACKEND = `/api/v1/book/${id}`;
+    return axios.delete(URL_BACKEND)
+}
+
 export {
     registerUserAPI, loginUserAPI, callFetchAccount, logoutUserAPI,
     fetchListUser, deleteUserAPI, createUserAPI, importUserAPI,
-    updateUserAPI
+    updateUserAPI, fetchListBook, deleteBookAPI
 }
